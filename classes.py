@@ -11,12 +11,6 @@ class item():
     node2: int = 0
     node3: int = 0
     node4: int = 0
-    node5: int = 0
-    node6: int = 0
-    node7: int = 0
-    node8: int = 0
-    node9: int = 0
-    node10: int = 0
     value: float = 0
 
     def setId(self, id: int):
@@ -43,27 +37,9 @@ class item():
     def setNode4(self, node4: int):
         self.node4 = node4
 
-    def setNode5(self, node5: int):
-        self.node5 = node5
-
-    def setNode6(self, node6: int):
-        self.node6 = node6
-
-    def setNode7(self, node7: int):
-        self.node7 = node7
-
-    def setNode8(self, node8: int):
-        self.node8 = node8
-
-    def setNode9(self, node9: int):
-        self.node9 = node9
-
-    def setNode10(self, node10: int):
-        self.node10 = node10
-
 
 class node(item):
-    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, node5: int, node6: int, node7: int, node8: int, node9: int, node10: int, value: float):
+    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, value: float):
         self.id = id
         self.x = x
         self.y = y
@@ -71,43 +47,45 @@ class node(item):
 
 
 class element(item):
-    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, node5: int, node6: int, node7: int, node8: int, node9: int, node10: int, value: float):
+    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, value: float):
         self.id = id
         self.node1 = node1
         self.node2 = node2
         self.node3 = node3
         self.node4 = node4
-        self.node5 = node5
-        self.node6 = node6
-        self.node7 = node7
-        self.node8 = node8
-        self.node9 = node9
-        self.node10 = node10
 
 
 class condition(item):
-    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, node5: int, node6: int, node7: int, node8: int, node9: int, node10: int, value: float):
+    def setValues(self, id: int, x: float, y: float, z: float, node1: int, node2: int, node3: int, node4: int, value: float):
         self.node1 = node1
         self.value = value
 
 
 class mesh:
-    parameters: list = [None, None]
-    sizes: list = [None, None, None, None]
+    parameters: list = [None, None, None, None]
+    sizes: list = [None, None, None, None, None, None]
     node_list: list = []
     element_list: list = []
-    indices_dirich: list = []
-    dirichlet_list: list = []
+    indices_dirich_X: list = []
+    indices_dirich_Y: list = []
+    indices_dirich_Z: list = []
+    dirichlet_list_X: list = []
+    dirichlet_list_Y: list = []
+    dirichlet_list_Z: list = []
     neumann_list: list = []
 
-    def setParameters(self, k: float, q: float):
-        self.parameters[parameters.THERMAL_CONDUCTIVITY.value] = k
-        self.parameters[parameters.HEAT_SOURCE.value] = q
+    def setParameters(self, EI: float, f_x: float, f_y: float, f_z: float):
+        self.parameters[parameters.CONSTANT_EI.value] = EI
+        self.parameters[parameters.FORCE_X.value] = f_x
+        self.parameters[parameters.FORCE_Y.value] = f_y
+        self.parameters[parameters.FORCE_Z.value] = f_z
 
-    def setSizes(self, nnodes: int, neltos: int, ndirich: int, nneu: int):
+    def setSizes(self, nnodes: int, neltos: int, ndirich_x: int, ndirich_y: int, ndirich_z: int, nneu: int):
         self.sizes[sizes.NODES.value] = nnodes
         self.sizes[sizes.ELEMENTS.value] = neltos
-        self.sizes[sizes.DIRICHLET.value] = ndirich
+        self.sizes[sizes.DIRICHLET_X.value] = ndirich_x
+        self.sizes[sizes.DIRICHLET_Y.value] = ndirich_y
+        self.sizes[sizes.DIRICHLET_Z.value] = ndirich_z
         self.sizes[sizes.NEUMANN.value] = nneu
 
     def getSize(self, s: int) -> int:
@@ -119,8 +97,8 @@ class mesh:
     def createData(self):
         self.node_list = [None]*self.sizes[sizes.NODES.value]
         self.element_list = [None]*self.sizes[sizes.ELEMENTS.value]
-        self.indices_dirich = [None]*sizes.DIRICHLET.value
-        self.dirichlet_list = [None]*self.sizes[sizes.DIRICHLET.value]
+        self.indices_dirich_X = [None]*sizes.DIRICHLET_X.value
+        self.dirichlet_list_X = [None]*self.sizes[sizes.DIRICHLET_X.value]
         self.neumann_list = [None]*self.sizes[sizes.NEUMANN.value]
 
     def getNode(self, i: int) -> node:
@@ -130,7 +108,7 @@ class mesh:
         return self.element_list[i]
 
     def getCondition(self, i: int, type: int):
-        if(type == sizes.DIRICHLET):
-            return self.dirichlet_list[i]
+        if(type == sizes.DIRICHLET_X):
+            return self.dirichlet_list_X[i]
         else:
             return self.neumann_list[i]

@@ -6,7 +6,7 @@ import sys
 
 
 def main():
-    filename = "3dtest"
+    filename = "proyecto_test"
     localKs = []
     localbs = []
     k = []
@@ -22,11 +22,11 @@ def main():
     leerMallayCondiciones(m, filename)
     print("Datos obtenidos correctamente\n********************")
 
-    crearSistemasLocales(m, localKs, localbs)
-    print("******************************")
+    # crearSistemasLocales(m, localKs, localbs)
+    # print("******************************")
 
     # Escribimos resultados
-    writeResult(m, w, filename)
+    # writeResult(m, w, filename)
 
 
 main()

@@ -31,18 +31,48 @@ def obtenerDatos(file: TextIOWrapper, item_list: list, type: int):
                 vals = line.split(" ")
                 vals = list(filter(('').__ne__, vals))
                 newElement = element()
-                newElement.setValues(int(vals[0]), None, None, None, int(vals[0]), int(
-                    vals[1]), int(vals[2]), int(vals[3]), None, None, None, None, None, None, None)
+                newElement.setValues(
+                    int(vals[0]), None, None,
+                    None, int(vals[0]), int(vals[1]),
+                    int(vals[2]), int(vals[3].replace('\n', '')), None)
 
                 item_list.append(newElement)
-    elif(type == sizes.DIRICHLET.value):
+    elif(type == sizes.DIRICHLET_X.value):
         stopCondition = False
         file.readline()
         while(stopCondition == False):
             line = file.readline()
-            if(line == "EndDirichlet\n"):
+            if(line == "EndDirichlet_X\n"):
                 stopCondition = True
-            if(line != "Dirichlet\n" and line != "EndDirichlet\n"):
+            if(line != "Dirichlet_X\n" and line != "EndDirichlet_X\n"):
+                vals = line.split(" ")
+                vals = list(filter(('').__ne__, vals))
+                newCondition = condition()
+                newCondition.node1 = int(vals[0])
+                newCondition.value = float(vals[1].replace('\n', ''))
+                item_list.append(newCondition)
+    elif(type == sizes.DIRICHLET_Y.value):
+        stopCondition = False
+        file.readline()
+        while(stopCondition == False):
+            line = file.readline()
+            if(line == "EndDirichlet_Y\n"):
+                stopCondition = True
+            if(line != "Dirichlet_Y\n" and line != "EndDirichlet_Y\n"):
+                vals = line.split(" ")
+                vals = list(filter(('').__ne__, vals))
+                newCondition = condition()
+                newCondition.node1 = int(vals[0])
+                newCondition.value = float(vals[1].replace('\n', ''))
+                item_list.append(newCondition)
+    elif(type == sizes.DIRICHLET_Z.value):
+        stopCondition = False
+        file.readline()
+        while(stopCondition == False):
+            line = file.readline()
+            if(line == "EndDirichlet_Z\n"):
+                stopCondition = True
+            if(line != "Dirichlet_Z\n" and line != "EndDirichlet_Z\n"):
                 vals = line.split(" ")
                 vals = list(filter(('').__ne__, vals))
                 newCondition = condition()
@@ -80,32 +110,42 @@ def leerMallayCondiciones(m: mesh, filename: str):
     filename += ".dat"
     file = open(filename)
     line = file.readline()
-    # Obteniendo k y q
+    # Obteniendo EI f_x f_y f_z
     vals = line.split(" ")
-    k = float(vals[0])
-    q = float(vals[1].replace('\n', ''))
-    # Obteniendo nnodes,neltos,ndirch,nneu
+    EI = float(vals[0])
+    f_x = float(vals[1])
+    f_y = float(vals[2])
+    f_z = float(vals[3].replace('\n', ''))
+    # Obteniendo nnodes,neltos,ndirch_x,ndirch_y,ndirch_z,nneu
     line = file.readline()
     vals = line.split(" ")
     nnodes = int(vals[0])
     neltos = int(vals[1])
-    ndirich = int(vals[2])
-    nneu = int(vals[3].replace('\n', ''))
+    ndirich_x = int(vals[2])
+    ndirich_y = int(vals[3])
+    ndirich_z = int(vals[4])
+    nneu = int(vals[5].replace('\n', ''))
     # Seteando parametros
-    m.setParameters(k, q)
-    m.setSizes(nnodes, neltos, ndirich, nneu)
+    m.setParameters(EI, f_x, f_y, f_z)
+    m.setSizes(nnodes, neltos, ndirich_x, ndirich_y, ndirich_z, nneu)
     # Obteniendo datos coordenadas
     obtenerDatos(file, m.node_list, sizes.NODES.value)
     # Obteniendo datos Elements
     obtenerDatos(file, m.element_list, sizes.ELEMENTS.value)
-    # Obteniendo datos Dirichlet
-    obtenerDatos(file, m.dirichlet_list, sizes.DIRICHLET.value)
+    # Obteniendo datos Dirichlet X
+    obtenerDatos(file, m.dirichlet_list_X, sizes.DIRICHLET_X.value)
+    # Obteniendo datos Dirichlet Y
+    obtenerDatos(file, m.dirichlet_list_Y, sizes.DIRICHLET_Y.value)
+    # Obteniendo datos Dirichlet Z
+    obtenerDatos(file, m.dirichlet_list_Z, sizes.DIRICHLET_Z.value)
     # Obteniendo datos Neumann
     obtenerDatos(file, m.neumann_list, sizes.NEUMANN.value)
     # Cerramos el archivo .dat
     file.close()
     # Corregimos indices de eliminacion
-    correctConditions(ndirich, m.dirichlet_list, m.indices_dirich)
+    correctConditions(ndirich_x, m.dirichlet_list_X, m.indices_dirich_X)
+    correctConditions(ndirich_y, m.dirichlet_list_Y, m.indices_dirich_Y)
+    correctConditions(ndirich_z, m.dirichlet_list_Z, m.indices_dirich_Z)
 
 
 def findIndex(v: int, s: int, arr: list):
@@ -116,8 +156,8 @@ def findIndex(v: int, s: int, arr: list):
 
 
 def writeResult(m: mesh, T: list, filename: str):
-    dirich_indices = m.indices_dirich
-    dirich = m.dirichlet_list
+    dirich_indices = m.indices_dirich_X
+    dirich = m.dirichlet_list_X
 
     # Agregamos la extension del archivo
     filename += ".post.res"

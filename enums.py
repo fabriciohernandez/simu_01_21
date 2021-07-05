@@ -19,12 +19,16 @@ class modes(Enum):
 
 
 class parameters(Enum):
-    THERMAL_CONDUCTIVITY = 0
-    HEAT_SOURCE = 1
+    CONSTANT_EI = 0
+    FORCE_X = 1
+    FORCE_Y = 2
+    FORCE_Z = 3
 
 
 class sizes(Enum):
     NODES = 0
     ELEMENTS = 1
-    DIRICHLET = 2
-    NEUMANN = 3
+    DIRICHLET_X = 2
+    DIRICHLET_Y = 3
+    DIRICHLET_Z = 4
+    NEUMANN = 5
