@@ -33,8 +33,8 @@ def obtenerDatos(file: TextIOWrapper, item_list: list, type: int):
                 newElement = element()
                 newElement.setValues(
                     int(vals[0]), None, None,
-                    None, int(vals[0]), int(vals[1]),
-                    int(vals[2]), int(vals[3].replace('\n', '')), None)
+                    None, int(vals[1]), int(vals[2]),
+                    int(vals[3]), int(vals[4].replace('\n', '')), None)
 
                 item_list.append(newElement)
     elif(type == sizes.DIRICHLET_X.value):
