@@ -1,7 +1,7 @@
 
 from math_tools import *
 from enums import parameters, sizes
-from classes import mesh
+from classes import condition, element, mesh
 
 
 def showMatrix(K: list):
@@ -102,10 +102,104 @@ def crearSistemasLocales(m: mesh, localks: list, localbs: list):
         localbs.append(createLocalb(i, m))
 
 
+def assemblyK(e: element, localK: list, K: list):
+    index1: e.node1-1
+    index2: e.node2-1
+    index3: e.node3-1
+    index4: e.node4-1
+
+    K[index1][index1] += localK[0][0]
+    K[index1][index2] += localK[0][1]
+    K[index1][index3] += localK[0][2]
+    K[index1][index4] += localK[0][3]
+
+    K[index2][index1] += localK[1][0]
+    K[index2][index2] += localK[1][1]
+    K[index2][index3] += localK[1][2]
+    K[index2][index4] += localK[1][3]
+
+    K[index3][index1] += localK[2][0]
+    K[index3][index2] += localK[2][1]
+    K[index3][index3] += localK[2][2]
+    K[index3][index4] += localK[2][3]
+
+    K[index4][index1] += localK[3][0]
+    K[index4][index2] += localK[3][1]
+    K[index4][index3] += localK[3][2]
+    K[index4][index4] += localK[3][3]
+
+
+def assemblyb(e: element, localb: list, b: list):
+    index1: e.node1-1
+    index2: e.node2-1
+    index3: e.node3-1
+    index4: e.node4-1
+
+    b[index1] += localb[0]
+    b[index2] += localb[1]
+    b[index3] += localb[2]
+    b[index4] += localb[3]
+
+
+def ensamblaje(m: mesh, localKs: list, localbs: list, k: list, b: list):
+    for i in range(0, m.getSize(sizes.ELEMENTS.value)):
+        e = m.getElement(i)
+        assemblyK(e, localKs[i], k)
+        assemblyb(e, localbs[i], b)
+
+
+def applyNeumann(m: mesh, b: list):
+    for i in range(0, len(m.getSize(sizes.NEUMANN.value))):
+        c = m.getCondition(i, sizes.NEUMANN.value)
+        b[c.node1-1] += c.value
+
+
+def applyDirichletX(m: mesh, k: list, b: list):
+    for i in range(0, m.getSize(sizes.DIRICHLET_X.value)):
+        c = m.getCondition(i, sizes.DIRICHLET_X.value)
+        index = c.node1-1
+
+        k.remove(k[0]+index)
+        k.remove(b[0]+index)
+
+        for row in range(0, len(k)):
+            cell = k[row][index]
+            k[row].remove(k[row][0]+index)
+            b[row] += -1*c.value*cell
+
+
+def applyDirichletY(m: mesh, k: list, b: list):
+    for i in range(0, m.getSize(sizes.DIRICHLET_Y.value)):
+        c = m.getCondition(i, sizes.DIRICHLET_Y.value)
+        index = c.node1-1
+
+        k.remove(k[0]+index)
+        k.remove(b[0]+index)
+
+        for row in range(0, len(k)):
+            cell = k[row][index]
+            k[row].remove(k[row][0]+index)
+            b[row] += -1*c.value*cell
+
+
+def applyDirichletZ(m: mesh, k: list, b: list):
+    for i in range(0, m.getSize(sizes.DIRICHLET_Z.value)):
+        c = m.getCondition(i, sizes.DIRICHLET_Z.value)
+        index = c.node1-1
+
+        k.remove(k[0]+index)
+        k.remove(b[0]+index)
+
+        for row in range(0, len(k)):
+            cell = k[row][index]
+            k[row].remove(k[row][0]+index)
+            b[row] += -1*c.value*cell
+
+
 def calculate(K: list, b: list, T: list):
     print("Iniciando calculo de respuesta...\n")
     Kinv = []
     print("Calculo de inversa...\n")
-    # inverseMatrix(K,Kinv)
+    inverseMatrix(K,Kinv)
     print("Calculo de respuesta...\n")
-    # productMatrixVector(Kinv,b,T)
+    productMatrixVector(Kinv,b,T)

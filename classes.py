@@ -110,5 +110,9 @@ class mesh:
     def getCondition(self, i: int, type: int):
         if(type == sizes.DIRICHLET_X):
             return self.dirichlet_list_X[i]
+        elif(type == sizes.DIRICHLET_Y):
+            return self.dirichlet_list_Y[i]
+        elif(type == sizes.DIRICHLET_Z):
+            return self.dirichlet_list_Z[i]
         else:
             return self.neumann_list[i]
