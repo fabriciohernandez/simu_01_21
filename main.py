@@ -22,8 +22,8 @@ def main():
     leerMallayCondiciones(m, filename)
     print("Datos obtenidos correctamente\n********************")
 
-    # crearSistemasLocales(m, localKs, localbs)
-    # print("******************************")
+    crearSistemasLocales(m, localKs, localbs)
+    print("******************************")
 
     # Escribimos resultados
     # writeResult(m, w, filename)
