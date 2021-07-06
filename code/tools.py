@@ -1,6 +1,6 @@
 from classes import *
 from io import TextIOWrapper
-from enums import modes, sizes
+from enums import sizes
 
 
 def obtenerDatos(file: TextIOWrapper, item_list: list, type: int):

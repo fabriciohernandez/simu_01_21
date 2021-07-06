@@ -1,7 +1,7 @@
 
 from math_tools import *
 from enums import parameters, sizes
-from classes import condition, element, mesh
+from classes import element, mesh
 
 
 def showMatrix(K: list):
